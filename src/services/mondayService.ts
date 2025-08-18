@@ -90,29 +90,25 @@ class MondayService {
     try {
       console.log('🧪 Teste Monday.com API-Verbindung...');
       
-      // Einfacher Test mit dem Board
-      const testQuery = `
-        query {
-          boards(ids: [${this.boardId}]) {
-            id
-            name
-          }
-        }
-      `;
+      // Direkter API-Aufruf ohne Proxy für Test
+      const testQuery = `query { boards(ids: [${this.boardId}]) { id name } }`;
       
-      const response = await fetch(this.baseUrl, {
+      const response = await fetch('https://api.monday.com/v2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': this.apiToken,
-          'API-Version': '2024-01',
-          'User-Agent': 'Neon-Konfigurator/1.0',
+          'API-Version': '2023-10',
         },
         body: JSON.stringify({ query: testQuery }),
       });
       
+      console.log('🌐 API Response Status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('📊 API Response Data:', data);
+        
         if (data.data?.boards) {
           console.log('✅ Monday.com API-Verbindung erfolgreich! Board:', data.data.boards[0]?.name);
           this.isConnected = true;
@@ -123,6 +119,8 @@ class MondayService {
           this.lastError = `API Fehler: ${data.errors[0]?.message || 'Unbekannt'}`;
         }
       } else {
+        const errorText = await response.text();
+        console.error('❌ API Response Error:', errorText);
         console.error('❌ Monday.com API-Verbindung fehlgeschlagen:', response.status, response.statusText);
         this.isConnected = false;
         this.lastError = `HTTP ${response.status}: ${response.statusText}`;
@@ -226,35 +224,23 @@ class MondayService {
 
       console.log('📤 GraphQL Query bereit');
       
-      // Use proxy for CORS handling
-      let response;
-      let usedMethod = 'proxy';
+      // Direkter API-Aufruf
+      console.log('🔄 Direkte Monday.com API-Anfrage...');
+      const response = await fetch('https://api.monday.com/v2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': this.apiToken,
+          'API-Version': '2023-10',
+        },
+        body: JSON.stringify({ query }),
+      });
       
-      try {
-        console.log('🔄 Verwende Proxy für Monday.com API-Anfrage...');
-        response = await fetch(this.baseUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': this.apiToken,
-            'API-Version': '2024-01',
-            'User-Agent': 'Neon-Konfigurator/1.0',
-          },
-          body: JSON.stringify({ query }),
-        });
-        console.log('📡 Proxy API-Antwort:', {
-          status: response.status,
-          statusText: response.statusText,
-          method: usedMethod
-        });
-      } catch (proxyError) {
-        console.error('❌ Proxy API-Anfrage fehlgeschlagen:', proxyError);
-        this.lastError = `Proxy Error: ${proxyError instanceof Error ? proxyError.message : 'Unknown error'}`;
-        this.connectionDetails.errorCount++;
-        this.isConnected = false;
-        this.lastSync = new Date();
-        return this.cache;
-      }
+      console.log('📡 API-Antwort:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url
+      });
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -262,13 +248,12 @@ class MondayService {
           status: response.status,
           statusText: response.statusText,
           body: errorText,
-          method: usedMethod,
           url: response.url
         };
         console.error('❌ Monday API Error Details:', errorDetails);
         this.lastError = `API Error ${response.status}: ${response.statusText}`;
         this.connectionDetails.errorCount++;
-        throw new Error(`Monday API Error: ${response.status} - ${response.statusText} (${usedMethod})`);
+        throw new Error(`Monday API Error: ${response.status} - ${response.statusText}`);
       }
 
       const data: MondayApiResponse = await response.json();
@@ -276,7 +261,7 @@ class MondayService {
         hasData: !!data.data,
         hasBoards: !!data.data?.boards,
         boardsCount: data.data?.boards?.length || 0,
-        method: usedMethod
+        fullResponse: data
       });
       
       if ((data as any).errors && (data as any).errors.length > 0) {
