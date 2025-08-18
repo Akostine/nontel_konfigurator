@@ -328,49 +328,104 @@ const NeonMockupStage: React.FC<NeonMockupStageProps> = ({
       </div>
 
       {/* Overlay (transparent, kompakt) */}
-      <div style={S.gear}>
-        <div style={S.gearBtn} onClick={()=>setOpen(v=>!v)}>⚙️ Optionen</div>
+      <div className="absolute top-4 right-4 z-10">
+        <button 
+          onClick={()=>setOpen(v=>!v)}
+          className={`flex items-center space-x-2 px-3 py-2 rounded-lg font-medium text-sm transition-all duration-300 border backdrop-blur-sm ${
+            open 
+              ? 'bg-blue-600 text-white border-blue-500 shadow-lg' 
+              : 'bg-white/90 text-gray-700 border-gray-200 hover:bg-white hover:shadow-md'
+          }`}
+        >
+          <div className={`w-4 h-4 rounded-full transition-colors ${
+            open ? 'bg-white/20' : 'bg-gray-400'
+          }`}>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <span>Optionen</span>
+        </button>
+        
         {open && (
-          <div style={S.gearPanel}>
-            <button onClick={()=> setDrag({dx:0,dy:0})} style={{padding:"6px 8px"}}>Zentrieren</button>
-            <button onClick={handlePickSvg} style={{padding:"6px 8px"}}>SVG laden…</button>
+          <div className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-4 min-w-[220px] backdrop-blur-sm">
+            <div className="space-y-3">
+              <button 
+                onClick={()=> setDrag({dx:0,dy:0})} 
+                className="w-full px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md text-sm font-medium transition-colors"
+              >
+                Zentrieren
+              </button>
+              <button 
+                onClick={handlePickSvg} 
+                className="w-full px-3 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-md text-sm font-medium transition-colors"
+              >
+                SVG laden…
+              </button>
 
             {sceneZoom===undefined && (
-              <label style={{display:"grid", gridTemplateColumns:"1fr auto", gap:8}}>
-                <span>Szene-Zoom</span>
-                <input type="range" min={0.30} max={1.50} step={0.01}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Szene-Zoom</label>
+                <input 
+                  type="range" 
+                  min={0.30} 
+                  max={1.50} 
+                  step={0.01}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                   defaultValue={localZoom}
                   onChange={(e)=> setLocalZoom(parseFloat(e.currentTarget.value))}
                 />
-              </label>
+              </div>
             )}
             {bgBrightness===undefined && (
-              <label style={{display:"grid", gridTemplateColumns:"1fr auto", gap:8}}>
-                <span>BG-Helligkeit</span>
-                <input type="range" min={0.30} max={1.60} step={0.01}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">BG-Helligkeit</label>
+                <input 
+                  type="range" 
+                  min={0.30} 
+                  max={1.60} 
+                  step={0.01}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                   defaultValue={localBg}
                   onChange={(e)=> setLocalBg(parseFloat(e.currentTarget.value))}
                 />
-              </label>
+              </div>
             )}
             {neonIntensity===undefined && (
-              <label style={{display:"grid", gridTemplateColumns:"1fr auto", gap:8}}>
-                <span>Neon-Intensität</span>
-                <input type="range" min={0.40} max={2.00} step={0.01}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Neon-Intensität</label>
+                <input 
+                  type="range" 
+                  min={0.40} 
+                  max={2.00} 
+                  step={0.01}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                   defaultValue={localNeon}
                   onChange={(e)=>{ const v=parseFloat(e.currentTarget.value); setLocalNeon(v); toggleNeon(svgRef.current, localNeonOn, v); }}
                 />
-              </label>
+              </div>
             )}
             {/* Neon An/Aus – sofort nutzbar */}
-            <label style={{display:"grid", gridTemplateColumns:"1fr auto", gap:8}}>
-              <span>Neon an</span>
-              <input
-                type="checkbox"
-                checked={localNeonOn}
-                onChange={(e)=>{ const v=e.currentTarget.checked; setLocalNeonOn(v); toggleNeon(svgRef.current, v, (neonIntensity ?? localNeon)); }}
-              />
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700">Neon an</label>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={localNeonOn}
+                  onChange={(e)=>{ const v=e.currentTarget.checked; setLocalNeonOn(v); toggleNeon(svgRef.current, v, (neonIntensity ?? localNeon)); }}
+                  className="sr-only"
+                />
+                <div className={`relative w-11 h-6 rounded-full transition-colors ${
+                  localNeonOn ? 'bg-blue-600' : 'bg-gray-200'
+                }`}>
+                  <div className={`absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform ${
+                    localNeonOn ? 'transform translate-x-5' : ''
+                  }`}></div>
+                </div>
+              </label>
+            </div>
+            </div>
           </div>
         )}
       </div>
