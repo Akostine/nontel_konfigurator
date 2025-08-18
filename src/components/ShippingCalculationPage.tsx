@@ -182,13 +182,12 @@ const ShippingCalculationPage: React.FC<ShippingCalculationPageProps> = ({
                       {/* Ultra-Compact Row Layout */}
                       <div className="flex items-center space-x-2">
                         {/* Design Image - Smaller */}
-                        <div className="w-10 h-10 bg-white border border-gray-200 rounded p-1 flex items-center justify-center overflow-hidden flex-shrink-0 self-center shadow-sm">
-                          <img
-                            src={sign.design.mockupUrl}
-                            alt={sign.design.name}
-                            className="max-w-full max-h-full object-contain rounded"
-                          />
-                        </div>
+                        <SVGPreview 
+                          design={sign.design}
+                          width={sign.width}
+                          height={sign.height}
+                          className="w-10 h-10"
+                        />
 
                         {/* Sign Info - Ultra-Compact */}
                         <div className="flex-1 min-w-0">

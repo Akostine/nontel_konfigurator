@@ -843,13 +843,12 @@ const PricingCalculator: React.FC<PricingCalculatorProps> = ({
                     >
                       <div className="flex items-start space-x-3 lg:space-x-4">
                         {/* Design Image */}
-                        <div className="w-16 lg:w-20 h-16 lg:h-20 bg-white border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
-                          <img
-                            src={sign.design.mockupUrl}
-                            alt={sign.design.name}
-                            className="max-w-full max-h-full object-contain rounded"
-                          />
-                        </div>
+                        <SVGPreview 
+                          design={sign.design}
+                          width={sign.width}
+                          height={sign.height}
+                          className="w-16 lg:w-20 h-16 lg:h-20"
+                        />
                         
                         {/* Sign Details */}
                         <div className="flex-1">

@@ -330,6 +330,7 @@ const NeonMockupStage: React.FC<NeonMockupStageProps> = ({
       {/* SVG-Plane */}
       <div style={S.planeWrap}>
         <div
+          data-mockup-stage
           ref={planeRef}
           style={S.plane}
           onPointerDown={onPointerDown}
