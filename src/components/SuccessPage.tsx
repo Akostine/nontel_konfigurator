@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { CheckCircle, Package, ArrowRight, Home } from 'lucide-react';
 
 const SuccessPage: React.FC = () => {
@@ -9,6 +7,21 @@ const SuccessPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [isDemo, setIsDemo] = useState(false);
+
+  // Import supabase conditionally
+  const [supabase, setSupabase] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadSupabase = async () => {
+      try {
+        const supabaseModule = await import('../lib/supabase');
+        setSupabase(supabaseModule.supabase);
+      } catch (error) {
+        console.warn('Supabase not available, running in demo mode');
+      }
+    };
+    loadSupabase();
+  }, []);
 
   useEffect(() => {
     const sessionId = searchParams.get('session_id');

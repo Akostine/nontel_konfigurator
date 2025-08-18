@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
@@ -11,10 +9,31 @@ const LoginPage: React.FC = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const navigate = useNavigate();
 
+  // Import supabase conditionally
+  const [supabase, setSupabase] = useState<any>(null);
+  
+  useEffect(() => {
+    const loadSupabase = async () => {
+      try {
+        const supabaseModule = await import('../../lib/supabase');
+        setSupabase(supabaseModule.supabase);
+      } catch (error) {
+        console.warn('Supabase not available, running in demo mode');
+      }
+    };
+    loadSupabase();
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage(null);
+
+    if (!supabase) {
+      setMessage({ type: 'error', text: 'Demo mode - authentication disabled' });
+      setLoading(false);
+      return;
+    }
 
     try {
       const { error } = await supabase.auth.signInWithPassword({

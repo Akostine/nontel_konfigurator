@@ -3,8 +3,6 @@ import { ArrowLeft, ShoppingCart, CreditCard, FileText, Edit3, Truck, Home, MapP
 import { ConfigurationState } from '../types/configurator';
 import { calculateSingleSignPrice, calculateDistance, getShippingInfo, calculateArea } from '../utils/calculations';
 import { mondayService } from '../services/mondayService';
-import { supabase } from '../lib/supabase';
-
 interface CartCheckoutProps {
   config: ConfigurationState;
   onConfigChange: (updates: Partial<ConfigurationState>) => void;
@@ -105,10 +103,19 @@ const CartCheckout: React.FC<CartCheckoutProps> = ({
     setIsProcessingPayment(true);
     
     try {
+      // Import supabase conditionally
+      let supabase: any = null;
+      try {
+        const supabaseModule = await import('../lib/supabase');
+        supabase = supabaseModule.supabase;
+      } catch (error) {
+        console.warn('Supabase not available, using demo mode');
+      }
+      
       // Check if we're in a Supabase environment
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       
-      if (supabaseUrl && supabaseUrl !== '') {
+      if (supabase && supabaseUrl && supabaseUrl !== '') {
         // Full Supabase + Stripe integration
         const { data: { session } } = await supabase.auth.getSession();
         

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
 import { STRIPE_PRODUCTS, StripeProduct } from '../stripe-config';
 import { ShoppingCart, CreditCard, Package, User, LogOut } from 'lucide-react';
 
@@ -10,7 +8,24 @@ const ProductsPage: React.FC = () => {
   const [subscription, setSubscription] = useState<any>(null);
   const navigate = useNavigate();
 
+  // Import supabase conditionally
+  const [supabase, setSupabase] = useState<any>(null);
+  
   useEffect(() => {
+    const loadSupabase = async () => {
+      try {
+        const supabaseModule = await import('../lib/supabase');
+        setSupabase(supabaseModule.supabase);
+      } catch (error) {
+        console.warn('Supabase not available, running in demo mode');
+      }
+    };
+    loadSupabase();
+  }, []);
+
+  useEffect(() => {
+    if (!supabase) return;
+    
     // Get current user
     const getCurrentUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -38,7 +53,7 @@ const ProductsPage: React.FC = () => {
     });
 
     return () => authSubscription.unsubscribe();
-  }, []);
+  }, [supabase]);
 
   const handlePurchase = async (product: StripeProduct) => {
     if (!user) {
