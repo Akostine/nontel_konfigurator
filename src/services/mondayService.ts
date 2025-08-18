@@ -100,12 +100,13 @@ class MondayService {
         }
       `;
       
-      const response = await fetch('https://api.monday.com/v2', {
+      const response = await fetch(this.baseUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': this.apiToken,
-          'API-Version': '2023-10',
+          'API-Version': '2024-01',
+          'User-Agent': 'Neon-Konfigurator/1.0',
         },
         body: JSON.stringify({ query: testQuery }),
       });
@@ -114,14 +115,22 @@ class MondayService {
         const data = await response.json();
         if (data.data?.boards) {
           console.log('✅ Monday.com API-Verbindung erfolgreich! Board:', data.data.boards[0]?.name);
+          this.isConnected = true;
+          this.lastError = null;
         } else if (data.errors) {
           console.error('❌ Monday.com API-Fehler:', data.errors);
+          this.isConnected = false;
+          this.lastError = `API Fehler: ${data.errors[0]?.message || 'Unbekannt'}`;
         }
       } else {
         console.error('❌ Monday.com API-Verbindung fehlgeschlagen:', response.status, response.statusText);
+        this.isConnected = false;
+        this.lastError = `HTTP ${response.status}: ${response.statusText}`;
       }
     } catch (error) {
       console.error('❌ Monday.com API-Verbindungstest fehlgeschlagen:', error);
+      this.isConnected = false;
+      this.lastError = error instanceof Error ? error.message : 'Verbindungstest fehlgeschlagen';
     }
   }
 
@@ -217,33 +226,12 @@ class MondayService {
 
       console.log('📤 GraphQL Query bereit');
       
-      // Try direct API call first, then fallback to proxy
+      // Use proxy for CORS handling
       let response;
-      let usedMethod = '';
+      let usedMethod = 'proxy';
       
       try {
-        console.log('🔄 Versuche direkte Monday.com API-Anfrage...');
-        usedMethod = 'direct';
-        response = await fetch('https://api.monday.com/v2', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': this.apiToken,
-            'API-Version': '2024-01',
-            'User-Agent': 'Neon-Konfigurator/1.0',
-          },
-          body: JSON.stringify({ query }),
-        });
-        console.log('📡 Direkte API-Antwort:', {
-          status: response.status,
-          statusText: response.statusText,
-          headers: Object.fromEntries(response.headers.entries())
-        });
-      } catch (directError) {
-        console.log('❌ Direkte API-Anfrage fehlgeschlagen:', directError);
-        console.log('🔄 Versuche Proxy-Anfrage...');
-        usedMethod = 'proxy';
-        
+        console.log('🔄 Verwende Proxy für Monday.com API-Anfrage...');
         response = await fetch(this.baseUrl, {
           method: 'POST',
           headers: {
@@ -259,6 +247,13 @@ class MondayService {
           statusText: response.statusText,
           method: usedMethod
         });
+      } catch (proxyError) {
+        console.error('❌ Proxy API-Anfrage fehlgeschlagen:', proxyError);
+        this.lastError = `Proxy Error: ${proxyError instanceof Error ? proxyError.message : 'Unknown error'}`;
+        this.connectionDetails.errorCount++;
+        this.isConnected = false;
+        this.lastSync = new Date();
+        return this.cache;
       }
       
       if (!response.ok) {
