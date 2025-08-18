@@ -531,7 +531,7 @@ function NeonConfiguratorApp() {
           {/* 1. Großer Hintergrundbereich (Produktvorschau) - Volle Breite */}
           <div className="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 -mt-6 md:-mt-12">
             {/* Großes Mockup-Bild - Volle Breite */}
-            <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 h-96 pt-20 flex items-center justify-center w-full">
+            <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 h-[500px] pt-20 flex items-center justify-center w-full">
               <NeonMockupStage
   lengthCm={config.customWidth}        // dein Breite-Wert in cm
   waterproof={config.isWaterproof}     // Wasserdicht-Knopf
@@ -651,7 +651,7 @@ function NeonConfiguratorApp() {
           {/* 3. Zwei-Spalten-Layout für Konfiguration und Optionen */}
           <div className="w-full">
             {/* Links - Konfiguration */}
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-3">
                   <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-2">
