@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import NeonMockupStage from './components/NeonMockupStage';
 import { supabase } from './lib/supabase';
 import CustomerHeader from './components/CustomerHeader';
 import MondayStatus from './components/MondayStatus';
@@ -28,6 +29,7 @@ import Footer from './components/Footer';
 
 function App() {
   const [user, setUser] = useState<any>(null);
+  const [neonOn, setNeonOn] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -518,11 +520,17 @@ function NeonConfiguratorApp() {
           <div className="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 -mt-6 md:-mt-12">
             {/* Großes Mockup-Bild - Volle Breite */}
             <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 h-96 pt-20 flex items-center justify-center w-full">
-              <img
-                src={config.selectedDesign.mockupUrl}
-                alt={config.selectedDesign.name}
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-              />
+              <NeonMockupStage
+  lengthCm={config.customWidth}        // dein Breite-Wert in cm
+  waterproof={config.isWaterproof}     // Wasserdicht-Knopf
+  uvOn={!!config.hasUvPrint}           // UV-Druck
+  neonOn={neonOn}                      // Neon an/aus (State aus Schritt 2.2 oder dein eigener)
+/* optional – falls du diese States schon hast:
+  bgBrightness={bgHelligkeit}
+  neonIntensity={neonStaerke}
+  sceneZoom={sceneZoom}
+*/
+ />
               
               <button
                 onClick={() => {
