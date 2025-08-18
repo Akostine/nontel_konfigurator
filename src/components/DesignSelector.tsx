@@ -144,6 +144,9 @@ const DesignSelector: React.FC<DesignSelectorProps> = ({
         <div className={`bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl p-4 md:p-6 flex items-center justify-center min-h-[350px] lg:min-h-[300px] overflow-hidden transition-all duration-300 relative ${
           !isCurrentDesignAdded ? 'opacity-50 grayscale' : ''
         } lg:rounded-b-none`}>
+        <div className={`bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl p-4 md:p-6 flex items-center justify-center min-h-[450px] lg:min-h-[400px] overflow-hidden transition-all duration-300 relative ${
+          !isCurrentDesignAdded ? 'opacity-50 grayscale' : ''
+        } lg:rounded-b-none`}>
           <img
             src={selectedDesign.mockupUrl}
             alt={selectedDesign.name}
