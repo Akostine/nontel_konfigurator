@@ -19,6 +19,7 @@ import ImpressumPage from './components/legal/ImpressumPage';
 import { ConfigurationState, SignConfiguration } from './types/configurator';
 import { MOCK_DESIGNS } from './data/mockDesigns';
 import { calculateProportionalHeight, calculateSingleSignPrice, calculateProportionalLedLength } from './utils/calculations';
+import NeonMockupStage from './components/NeonMockupStage';
 import { ShoppingCart, X, ArrowLeft, ChevronLeft, ChevronRight, Settings, FileText, Ruler, Shield, Truck, Wrench, MapPin, Info, Scissors, Palette } from 'lucide-react';
 import { Edit3 } from 'lucide-react';
 import ShippingCalculationPage from './components/ShippingCalculationPage';
