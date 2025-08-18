@@ -141,15 +141,25 @@ const DesignSelector: React.FC<DesignSelectorProps> = ({
 
       {/* Design Display */}
       <div className="relative lg:block">
-        <div className={`bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl p-4 md:p-6 flex items-center justify-center min-h-[350px] lg:min-h-[300px] overflow-hidden transition-all duration-300 relative ${
+        <div className={`bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-xl p-4 md:p-6 flex items-center justify-center min-h-[350px] lg:min-h-[300px] overflow-hidden transition-all duration-300 relative border-4 border-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 shadow-2xl ${
           !isCurrentDesignAdded ? 'opacity-50 grayscale' : ''
-        } lg:rounded-b-none`}>
+        } lg:rounded-b-none before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-r before:from-blue-500/20 before:via-purple-500/20 before:to-pink-500/20 before:blur-sm before:-z-10`}>
+          
+          {/* Stylische Ecken-Ornamente */}
+          <div className="absolute top-2 left-2 w-6 h-6 border-l-2 border-t-2 border-blue-400/60 rounded-tl-lg"></div>
+          <div className="absolute top-2 right-2 w-6 h-6 border-r-2 border-t-2 border-purple-400/60 rounded-tr-lg"></div>
+          <div className="absolute bottom-2 left-2 w-6 h-6 border-l-2 border-b-2 border-pink-400/60 rounded-bl-lg"></div>
+          <div className="absolute bottom-2 right-2 w-6 h-6 border-r-2 border-b-2 border-blue-400/60 rounded-br-lg"></div>
+          
+          {/* Glowing border effect */}
+          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse"></div>
+          
           <img
             src={selectedDesign.mockupUrl}
             alt={selectedDesign.name}
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl lg:shadow-2xl"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl lg:shadow-2xl relative z-10 border border-white/10"
             style={{
-              filter: 'drop-shadow(0 0 20px rgba(236, 72, 153, 0.5))',
+              filter: 'drop-shadow(0 0 30px rgba(236, 72, 153, 0.7)) drop-shadow(0 0 60px rgba(59, 130, 246, 0.4))',
             }}
           />
           
@@ -216,28 +226,31 @@ const DesignSelector: React.FC<DesignSelectorProps> = ({
       </div>
 
       {/* Design Info - Connected to design display */}
-      <div className="bg-slate-800 lg:rounded-t-none rounded-b-xl px-4 py-3 lg:px-3 lg:py-2 border border-gray-600 lg:border-t-0 mb-6 lg:mb-6">
+      <div className="bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 lg:rounded-t-none rounded-b-xl px-4 py-3 lg:px-3 lg:py-2 border-2 border-gradient-to-r from-blue-500/40 via-purple-500/40 to-pink-500/40 lg:border-t-0 mb-6 lg:mb-6 shadow-lg relative overflow-hidden">
+        {/* Subtle glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5"></div>
+        
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-white truncate pr-2">{selectedDesign.name}</h3>
-          <span className="text-xs font-bold text-gray-300 bg-gray-700 px-2 py-1 rounded flex-shrink-0">#{currentIndex + 1}</span>
+          <h3 className="text-sm font-bold text-white truncate pr-2 relative z-10">{selectedDesign.name}</h3>
+          <span className="text-xs font-bold text-gray-300 bg-gradient-to-r from-gray-700 to-gray-600 px-2 py-1 rounded-full flex-shrink-0 border border-gray-500/30 relative z-10">#{currentIndex + 1}</span>
         </div>
         
-        <div className="grid grid-cols-2 lg:flex lg:items-center lg:justify-between gap-2 lg:gap-0 mt-2 text-xs">
+        <div className="grid grid-cols-2 lg:flex lg:items-center lg:justify-between gap-2 lg:gap-0 mt-2 text-xs relative z-10">
           <div className="text-center">
-            <div className="text-gray-400">Breite</div>
-            <div className="font-bold text-blue-400">{selectedDesign.originalWidth}cm</div>
+            <div className="text-gray-400 text-xs">Breite</div>
+            <div className="font-bold text-blue-300 bg-blue-500/20 px-2 py-0.5 rounded">{selectedDesign.originalWidth}cm</div>
           </div>
           <div className="text-center">
-            <div className="text-gray-400">Höhe</div>
-            <div className="font-bold text-purple-400">{selectedDesign.originalHeight}cm</div>
+            <div className="text-gray-400 text-xs">Höhe</div>
+            <div className="font-bold text-purple-300 bg-purple-500/20 px-2 py-0.5 rounded">{selectedDesign.originalHeight}cm</div>
           </div>
           <div className="text-center">
-            <div className="text-gray-400">Elemente</div>
-            <div className="font-bold text-green-400">{selectedDesign.elements}</div>
+            <div className="text-gray-400 text-xs">Elemente</div>
+            <div className="font-bold text-green-300 bg-green-500/20 px-2 py-0.5 rounded">{selectedDesign.elements}</div>
           </div>
           <div className="text-center">
-            <div className="text-gray-400">LED</div>
-            <div className="font-bold text-pink-400">
+            <div className="text-gray-400 text-xs">LED</div>
+            <div className="font-bold text-pink-300 bg-pink-500/20 px-2 py-0.5 rounded">
               {selectedDesign.ledLength}m
             </div>
           </div>
