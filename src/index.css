@@ -254,8 +254,8 @@
 
 .raindrop {
   position: absolute;
-  width: 2px;
-  height: 20px;
+  width: 1.5px;
+  height: 25px;
   background: linear-gradient(to bottom, transparent, rgba(173, 216, 230, 0.8), transparent);
   border-radius: 50%;
   animation: fall linear infinite;
@@ -263,13 +263,27 @@
 }
 
 .raindrop:nth-child(odd) {
-  background: linear-gradient(to bottom, transparent, rgba(135, 206, 235, 0.6), transparent);
+  background: linear-gradient(to bottom, transparent, rgba(135, 206, 235, 0.9), transparent);
+  width: 2px;
+  height: 30px;
 }
 
 .raindrop:nth-child(3n) {
+  width: 1.2px;
+  height: 18px;
+  background: linear-gradient(to bottom, transparent, rgba(176, 224, 230, 0.85), transparent);
+}
+
+.raindrop:nth-child(4n) {
+  width: 2.5px;
+  height: 35px;
+  background: linear-gradient(to bottom, transparent, rgba(100, 149, 237, 0.7), transparent);
+}
+
+.raindrop:nth-child(5n) {
   width: 1px;
-  height: 15px;
-  background: linear-gradient(to bottom, transparent, rgba(176, 224, 230, 0.7), transparent);
+  height: 22px;
+  background: linear-gradient(to bottom, transparent, rgba(70, 130, 180, 0.6), transparent);
 }
 
 /* Button hover effects */

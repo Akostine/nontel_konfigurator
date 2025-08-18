@@ -313,14 +313,14 @@ const NeonMockupStage: React.FC<NeonMockupStageProps> = ({
       {(setName==="outdoor_30%" && waterproof) && (
         <div style={S.rain}>
           {/* CSS Rain Effect */}
-          {Array.from({ length: 50 }).map((_, i) => (
+          {Array.from({ length: 120 }).map((_, i) => (
             <div
               key={i}
               className="raindrop"
               style={{
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 2}s`,
-                animationDuration: `${0.5 + Math.random() * 1}s`
+                animationDuration: `${0.3 + Math.random() * 0.8}s`
               }}
             />
           ))}
