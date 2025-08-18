@@ -531,7 +531,16 @@ function NeonConfiguratorApp() {
           {/* 1. Großer Hintergrundbereich (Produktvorschau) - Volle Breite */}
           <div className="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 -mt-6 md:-mt-12">
             {/* Großes Mockup-Bild - Volle Breite */}
-            <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 h-[600px] pt-20 flex items-center justify-center w-full">
+          <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 h-[600px] pt-20 flex items-center justify-center w-full border-4 border-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 shadow-2xl overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/10 before:via-purple-500/10 before:to-pink-500/10 before:animate-pulse before:pointer-events-none after:absolute after:inset-0 after:border-2 after:border-gradient-to-r after:from-cyan-400/20 after:via-purple-400/20 after:to-pink-400/20 after:rounded-lg after:animate-pulse after:pointer-events-none">
+            {/* Stylische Ecken-Ornamente */}
+            <div className="absolute top-4 left-4 w-8 h-8 border-l-3 border-t-3 border-blue-400/60 rounded-tl-xl z-10"></div>
+            <div className="absolute top-4 right-4 w-8 h-8 border-r-3 border-t-3 border-purple-400/60 rounded-tr-xl z-10"></div>
+            <div className="absolute bottom-4 left-4 w-8 h-8 border-l-3 border-b-3 border-pink-400/60 rounded-bl-xl z-10"></div>
+            <div className="absolute bottom-4 right-4 w-8 h-8 border-r-3 border-b-3 border-cyan-400/60 rounded-br-xl z-10"></div>
+            
+            {/* Glowing border effect */}
+            <div className="absolute inset-2 rounded-xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 animate-pulse pointer-events-none z-10"></div>
+            
               <NeonMockupStage
   lengthCm={config.customWidth}        // dein Breite-Wert in cm
   waterproof={config.isWaterproof}     // Wasserdicht-Knopf
