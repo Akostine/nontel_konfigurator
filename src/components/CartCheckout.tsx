@@ -239,11 +239,11 @@ const CartCheckout: React.FC<CartCheckoutProps> = ({
                 {!isCurrentDesignInList && (
                   <div className="border border-green-200 bg-green-50 rounded-lg p-4">
                     <div className="flex items-start space-x-4">
-                      <div className="w-20 h-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-lg p-2 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <div className="w-20 h-20 bg-white border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
                         <img
                           src={config.selectedDesign.mockupUrl}
                           alt={config.selectedDesign.name}
-                          className="max-w-full max-h-full object-contain rounded opacity-80"
+                          className="max-w-full max-h-full object-contain rounded"
                         />
                       </div>
                       
@@ -294,11 +294,11 @@ const CartCheckout: React.FC<CartCheckoutProps> = ({
                     }`}
                   >
                     <div className="flex items-start space-x-4">
-                      <div className="w-20 h-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-lg p-2 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <div className="w-20 h-20 bg-white border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm">
                         <img
                           src={sign.design.mockupUrl}
                           alt={sign.design.name}
-                          className="max-w-full max-h-full object-contain rounded opacity-80"
+                          className="max-w-full max-h-full object-contain rounded"
                         />
                       </div>
                       
