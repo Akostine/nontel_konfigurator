@@ -89,6 +89,8 @@ function App() {
 
 function NeonConfiguratorApp() {
   const [neonOn, setNeonOn] = useState(true);
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [config, setConfig] = useState<ConfigurationState>({
     selectedDesign: MOCK_DESIGNS[0],
     customWidth: 200, // 2m
@@ -113,6 +115,15 @@ function NeonConfiguratorApp() {
   const [showMobileCart, setShowMobileCart] = useState(false);
   const [currentStep, setCurrentStep] = useState<'design' | 'cart'>('design');
   const [showShippingPage, setShowShippingPage] = useState(false);
+  
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Load designs from Monday.com on component mount
   useEffect(() => {
@@ -158,6 +169,25 @@ function NeonConfiguratorApp() {
 
   const handleConfigChange = (updates: Partial<ConfigurationState>) => {
     console.log('🔧 Config change:', updates);
+    
+    // Neon ausschalten bei Konfigurationsänderungen die das Design beeinflussen
+    if ((updates.customWidth !== undefined || updates.calculatedHeight !== undefined || 
+         updates.isWaterproof !== undefined || updates.isTwoPart !== undefined) && neonOn) {
+      setNeonOn(false);
+      setIsResizing(true);
+      
+      // Clear existing timeout
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      
+      // Neon nach 600ms wieder einschalten
+      resizeTimeoutRef.current = setTimeout(() => {
+        setNeonOn(true);
+        setIsResizing(false);
+      }, 600);
+    }
+    
     setConfig(prev => {
       const newConfig = { ...prev, ...updates };
       
@@ -314,6 +344,17 @@ function NeonConfiguratorApp() {
   }, [config.isTwoPart, maxWidthForHeight]);
 
   const handleWidthChange = (newWidth: number) => {
+    // Neon ausschalten während Größenänderung
+    if (neonOn) {
+      setNeonOn(false);
+      setIsResizing(true);
+    }
+    
+    // Clear existing timeout
+    if (resizeTimeoutRef.current) {
+      clearTimeout(resizeTimeoutRef.current);
+    }
+    
     const newHeight = calculateProportionalHeight(
       config.selectedDesign.originalWidth,
       config.selectedDesign.originalHeight,
@@ -330,6 +371,12 @@ function NeonConfiguratorApp() {
       customWidth: newWidth,
       calculatedHeight: newHeight
     });
+    
+    // Neon nach 800ms wieder einschalten
+    resizeTimeoutRef.current = setTimeout(() => {
+      setNeonOn(true);
+      setIsResizing(false);
+    }, 800);
   };
 
   const handleGoToCart = () => {
@@ -545,7 +592,7 @@ function NeonConfiguratorApp() {
   lengthCm={config.customWidth}        // dein Breite-Wert in cm
   waterproof={config.isWaterproof}     // Wasserdicht-Knopf
   uvOn={!!config.hasUvPrint}           // UV-Druck
-  neonOn={neonOn}                      // Neon an/aus (State aus Schritt 2.2 oder dein eigener)
+  neonOn={neonOn && !isResizing}       // Neon an/aus - automatisch aus während Größenänderung
 /* optional – falls du diese States schon hast:
   bgBrightness={bgHelligkeit}
   neonIntensity={neonStaerke}
@@ -745,6 +792,16 @@ function NeonConfiguratorApp() {
                         onChange={(e) => handleWidthChange(Number(e.target.value))}
                         className="flex-1 px-2 py-1 border border-gray-300 rounded-lg text-center font-medium focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       />
+                      {isResizing && (
+                        <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs px-1 py-0.5 rounded animate-pulse">
+                          ⚡
+                        </div>
+                      )}
+                      {isResizing && (
+                        <div className="absolute top-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full animate-pulse">
+                          Neon wird neu berechnet...
+                        </div>
+                      )}
                       <span className="text-gray-600 font-medium text-sm">cm</span>
                     </div>
                     <input
