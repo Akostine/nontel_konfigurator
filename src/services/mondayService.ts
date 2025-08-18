@@ -224,6 +224,8 @@ class MondayService {
 
       console.log('📤 GraphQL Query bereit');
       
+      const usedMethod = 'Direct API Call';
+      
       // Direkter API-Aufruf
       console.log('🔄 Direkte Monday.com API-Anfrage...');
       const response = await fetch('https://api.monday.com/v2', {
