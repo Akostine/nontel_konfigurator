@@ -234,6 +234,44 @@
   animation: fade-in 0.3s ease-out;
 }
 
+/* CSS Rain Effect */
+@keyframes fall {
+  0% {
+    transform: translateY(-100vh);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.raindrop {
+  position: absolute;
+  width: 2px;
+  height: 20px;
+  background: linear-gradient(to bottom, transparent, rgba(173, 216, 230, 0.8), transparent);
+  border-radius: 50%;
+  animation: fall linear infinite;
+  pointer-events: none;
+}
+
+.raindrop:nth-child(odd) {
+  background: linear-gradient(to bottom, transparent, rgba(135, 206, 235, 0.6), transparent);
+}
+
+.raindrop:nth-child(3n) {
+  width: 1px;
+  height: 15px;
+  background: linear-gradient(to bottom, transparent, rgba(176, 224, 230, 0.7), transparent);
+}
+
 /* Button hover effects */
 .button-hover-effect {
   position: relative;

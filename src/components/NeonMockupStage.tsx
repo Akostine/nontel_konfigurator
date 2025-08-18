@@ -85,7 +85,7 @@ const NeonMockupStage: React.FC<NeonMockupStageProps> = ({
   const S: Record<string, React.CSSProperties> = {
     scene:{position:"relative", inset:0, width:"100%", height:"100%", background:"#000", overflow:"hidden", borderRadius:12},
     layer:{position:"absolute", inset:0, backgroundPosition:"center", backgroundSize:"cover", backgroundRepeat:"no-repeat", pointerEvents:"none"},
-    rain:{position:"absolute", inset:0, backgroundPosition:"center", backgroundSize:"cover", backgroundRepeat:"no-repeat", pointerEvents:"none", opacity:0.12, zIndex:4},
+    rain:{position:"absolute", inset:0, pointerEvents:"none", opacity:0.15, zIndex:4, overflow:"hidden"},
     planeWrap:{position:"absolute", inset:0, zIndex:2, pointerEvents:"none"},
     plane:{
       position:"absolute", left:"50%", top:"50%",
@@ -100,7 +100,6 @@ const NeonMockupStage: React.FC<NeonMockupStageProps> = ({
 
   const baseUrl  = `/assets/${encPct(setName)}.png`;
   const mobelUrl = `/assets/${encPct(setName)}_mobel.png`;
-  const rainUrl  = `/assets/rain.gif`;
 
   // Acrylic
   function firstShapeWithin(root:Element|null){ if(!root) return null; return root.querySelector("path, polygon, rect, ellipse, circle") as any; }
@@ -312,7 +311,20 @@ const NeonMockupStage: React.FC<NeonMockupStageProps> = ({
       }}/>
       {/* Rain (12%) */}
       {(setName==="outdoor_30%" && waterproof) && (
-        <div style={{...S.rain, backgroundImage:`url(${rainUrl})`}}/>
+        <div style={S.rain}>
+          {/* CSS Rain Effect */}
+          {Array.from({ length: 50 }).map((_, i) => (
+            <div
+              key={i}
+              className="raindrop"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${0.5 + Math.random() * 1}s`
+              }}
+            />
+          ))}
+        </div>
       )}
 
       {/* SVG-Plane */}
