@@ -3,6 +3,7 @@ import { ArrowLeft, Eye, EyeOff, Edit3, Package, Home, MapPin, CreditCard, FileT
 import { ConfigurationState, SignConfiguration } from '../types/configurator';
 import { calculateSingleSignPrice, calculateArea, calculateDistance, getShippingInfo, calculateProportionalHeight, getRealCityName } from '../utils/calculations';
 import { mondayService } from '../services/mondayService';
+import SVGPreview from './SVGPreview';
 
 interface ShippingCalculationPageProps {
   config: ConfigurationState;
