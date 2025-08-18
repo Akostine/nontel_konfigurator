@@ -40,7 +40,6 @@ interface MondayApiResponse {
 class MondayService {
   private apiToken: string;
   private boardId: string;
-  private groupId: string;
   private baseUrl = '/api/monday';
   private cache: Map<string, MondayPriceItem> = new Map();
   private lastSync: Date | null = null;
@@ -77,7 +76,6 @@ class MondayService {
     }
     
     this.boardId = '2090208832';
-    this.groupId = 'topics';
     
     // Initialize with fallback prices
     this.initializeFallbackPrices();
@@ -91,12 +89,13 @@ class MondayService {
   private async testConnection(): Promise<void> {
     try {
       console.log('🧪 Teste Monday.com API-Verbindung...');
+      
+      // Einfacher Test mit dem Board
       const testQuery = `
         query {
-          me {
+          boards(ids: [${this.boardId}]) {
             id
             name
-            email
           }
         }
       `;
@@ -113,8 +112,8 @@ class MondayService {
       
       if (response.ok) {
         const data = await response.json();
-        if (data.data?.me) {
-          console.log('✅ Monday.com API-Verbindung erfolgreich! Benutzer:', data.data.me.name);
+        if (data.data?.boards) {
+          console.log('✅ Monday.com API-Verbindung erfolgreich! Board:', data.data.boards[0]?.name);
         } else if (data.errors) {
           console.error('❌ Monday.com API-Fehler:', data.errors);
         }
@@ -128,45 +127,45 @@ class MondayService {
 
   private initializeFallbackPrices(): void {
     const fallbackPrices = [
-      { name: 'acryl_glass', preis: 58.46, einheit: '€/m²' },
-      { name: 'uv_print', preis: 36.22, einheit: '€/m²' },
-      { name: 'led', preis: 2.50, einheit: '€/m' },
-      { name: 'elements', preis: 2.00, einheit: '€/piece' },
-      { name: 'assembly', preis: 150.00, einheit: '€/m²' },
-      { name: 'packaging', preis: 30.00, einheit: '€/m²' },
-      { name: 'controller', preis: 20.00, einheit: '€/piece' },
-      { name: 'controller_high_power', preis: 50.00, einheit: '€/piece' },
-      { name: 'hourly_wage', preis: 25.00, einheit: '€/h' }, // Fallback für Item ID 2090228072
-      { name: 'time_per_m2', stunde: 3.0, einheit: 'h/m²' }, // Fallback für Item ID 2090288932
-      { name: 'time_per_element', stunde: 0.1, einheit: 'h/Element' }, // Fallback für Item ID 2090294337
-      { name: 'waterproofing', prozent: 25, einheit: '%' },
-      { name: 'multi_part', prozent: 15, einheit: '%' },
-      { name: 'administrative_costs', prozent: 20, einheit: '%' },
-      { name: 'express_production', prozent: 30, einheit: '%' },
-      { name: 'distance_rate', preis: 1.50, einheit: '€/km' },
+      { name: 'acryl_glass', preis: 58.46, einheit: '€/m²', id: 'fallback-acryl' },
+      { name: 'uv_print', preis: 36.22, einheit: '€/m²', id: 'fallback-uv' },
+      { name: 'led', preis: 2.50, einheit: '€/m', id: 'fallback-led' },
+      { name: 'elements', preis: 2.00, einheit: '€/piece', id: 'fallback-elements' },
+      { name: 'assembly', preis: 150.00, einheit: '€/m²', id: 'fallback-assembly' },
+      { name: 'packaging', preis: 30.00, einheit: '€/m²', id: 'fallback-packaging' },
+      { name: 'controller', preis: 20.00, einheit: '€/piece', id: 'fallback-controller' },
+      { name: 'controller_high_power', preis: 50.00, einheit: '€/piece', id: 'fallback-controller-hp' },
+      { name: 'hourly_wage', preis: 25.00, einheit: '€/h', id: 'fallback-wage' },
+      { name: 'time_per_m2', stunde: 3.0, einheit: 'h/m²', id: 'fallback-time-m2' },
+      { name: 'time_per_element', stunde: 0.1, einheit: 'h/Element', id: 'fallback-time-element' },
+      { name: 'waterproofing', prozent: 25, einheit: '%', id: 'fallback-waterproof' },
+      { name: 'multi_part', prozent: 15, einheit: '%', id: 'fallback-multipart' },
+      { name: 'administrative_costs', prozent: 20, einheit: '%', id: 'fallback-admin' },
+      { name: 'express_production', prozent: 30, einheit: '%', id: 'fallback-express' },
+      { name: 'distance_rate', preis: 1.50, einheit: '€/km', id: 'fallback-distance' },
       // Power supplies
-      { name: 'power_usb_15w', preis: 5.00, einheit: '€' },
-      { name: 'power_30w', preis: 8.00, einheit: '€' },
-      { name: 'power_70w', preis: 15.00, einheit: '€' },
-      { name: 'power_120w', preis: 20.00, einheit: '€' },
-      { name: 'power_200w', preis: 30.00, einheit: '€' },
-      { name: 'power_250w', preis: 40.00, einheit: '€' },
-      { name: 'power_300w', preis: 50.00, einheit: '€' },
-      { name: 'power_400w', preis: 70.00, einheit: '€' },
-      { name: 'power_1000w', preis: 200.00, einheit: '€' },
+      { name: 'power_usb_15w', preis: 5.00, einheit: '€', id: 'fallback-power-15w' },
+      { name: 'power_30w', preis: 8.00, einheit: '€', id: 'fallback-power-30w' },
+      { name: 'power_70w', preis: 15.00, einheit: '€', id: 'fallback-power-70w' },
+      { name: 'power_120w', preis: 20.00, einheit: '€', id: 'fallback-power-120w' },
+      { name: 'power_200w', preis: 30.00, einheit: '€', id: 'fallback-power-200w' },
+      { name: 'power_250w', preis: 40.00, einheit: '€', id: 'fallback-power-250w' },
+      { name: 'power_300w', preis: 50.00, einheit: '€', id: 'fallback-power-300w' },
+      { name: 'power_400w', preis: 70.00, einheit: '€', id: 'fallback-power-400w' },
+      { name: 'power_1000w', preis: 200.00, einheit: '€', id: 'fallback-power-1000w' },
       // Shipping
-      { name: 'dhl_klein_20cm', preis: 20.00, einheit: '€' },
-      { name: 'dhl_mittel_60cm', preis: 40.00, einheit: '€' },
-      { name: 'dhl_gross_100cm', preis: 80.00, einheit: '€' },
-      { name: 'spedition_120cm', preis: 160.00, einheit: '€' },
-      { name: 'gutertransport_240cm', preis: 500.00, einheit: '€' },
+      { name: 'dhl_klein_20cm', preis: 20.00, einheit: '€', id: 'fallback-dhl-klein' },
+      { name: 'dhl_mittel_60cm', preis: 40.00, einheit: '€', id: 'fallback-dhl-mittel' },
+      { name: 'dhl_gross_100cm', preis: 80.00, einheit: '€', id: 'fallback-dhl-gross' },
+      { name: 'spedition_120cm', preis: 160.00, einheit: '€', id: 'fallback-spedition' },
+      { name: 'gutertransport_240cm', preis: 500.00, einheit: '€', id: 'fallback-gutertransport' },
       // Hanging system
-      { name: 'hanging_system', preis: 15.00, einheit: '€' },
+      { name: 'hanging_system', preis: 15.00, einheit: '€', id: 'fallback-hanging' },
     ];
 
     fallbackPrices.forEach(item => {
       this.cache.set(item.name, {
-        id: 'fallback',
+        id: item.id,
         name: item.name,
         einheit: item.einheit,
         preis: item.preis,
@@ -201,13 +200,10 @@ class MondayService {
       const query = `
         query {
           boards(ids: [${this.boardId}]) {
-            items_page(limit: 50) {
+            items_page(limit: 100) {
               items {
                 id
                 name
-                group {
-                  id
-                }
                 column_values {
                   id
                   text
@@ -233,7 +229,7 @@ class MondayService {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': this.apiToken,
-            'API-Version': '2023-10',
+            'API-Version': '2024-01',
             'User-Agent': 'Neon-Konfigurator/1.0',
           },
           body: JSON.stringify({ query }),
@@ -253,7 +249,7 @@ class MondayService {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': this.apiToken,
-            'API-Version': '2023-10',
+            'API-Version': '2024-01',
             'User-Agent': 'Neon-Konfigurator/1.0',
           },
           body: JSON.stringify({ query }),
@@ -290,13 +286,15 @@ class MondayService {
       
       if ((data as any).errors && (data as any).errors.length > 0) {
         console.error('❌ GraphQL Errors:', data.errors);
-        this.lastError = `GraphQL Error: ${(data as any).errors[0]?.message}`;
+        this.lastError = `GraphQL Error: ${(data as any).errors[0]?.message || 'Unknown GraphQL error'}`;
         this.connectionDetails.errorCount++;
-        throw new Error(this.lastError);
+        console.warn('⚠️ GraphQL Fehler, verwende Fallback-Preise');
+        this.isConnected = false;
+        this.lastSync = new Date();
+        return this.cache;
       }
       
       const items = data?.data?.boards?.[0]?.items_page?.items?.filter(item => 
-        // Hole alle Items, nicht nur aus der "topics" Gruppe
         true
       ) || [];
       console.log('📋 Gefundene Items:', items.length);
@@ -316,7 +314,6 @@ class MondayService {
         console.log('🔍 Verarbeite Item:', {
           id: item.id,
           name: item.name,
-          group: item.group?.id
         });
         
         // Prüfe ob es ein spezielles Item ist
@@ -557,38 +554,82 @@ class MondayService {
   private mapMondayNameToKey(mondayName: string): string | null {
     console.log(`🗝️ Mapping-Versuch für: "${mondayName}"`);
     const mapping: Record<string, string> = {
+      // Basis-Materialien
       'Acryl Glass': 'acryl_glass',
+      'Acrylglas': 'acryl_glass',
       'UV Druck': 'uv_print',
+      'UV-Druck': 'uv_print',
+      'UV Print': 'uv_print',
       'LED': 'led',
+      'Led': 'led',
       'Element': 'elements',
+      'Elemente': 'elements',
       'Montage': 'assembly',
+      'Assembly': 'assembly',
       'Verpackung': 'packaging',
+      'Packaging': 'packaging',
       'Controller': 'controller',
+      'Steuerung': 'controller',
       'Stundenlohn': 'hourly_wage',
+      'Hourly Wage': 'hourly_wage',
+      'Lohn': 'hourly_wage',
+      // Aufschläge
       'Wasserdichtigkeit': 'waterproofing',
+      'Wasserdicht': 'waterproofing',
+      'Waterproof': 'waterproofing',
       'Mehrteilig': 'multi_part',
+      'Multi Part': 'multi_part',
+      'Zweiteilig': 'multi_part',
       'Verwaltungskosten': 'administrative_costs',
       'Verwaltung': 'administrative_costs',
       'Admin': 'administrative_costs',
       'Administrative Costs': 'administrative_costs',
       'Administrative': 'administrative_costs',
       'Verwaltungsaufwand': 'administrative_costs',
+      'Administration': 'administrative_costs',
       'Express Herstellung': 'express_production',
+      'Express Production': 'express_production',
+      'Express': 'express_production',
+      'Eilauftrag': 'express_production',
+      // Transport
       'Kilometer': 'distance_rate',
+      'Distance Rate': 'distance_rate',
+      'Entfernung': 'distance_rate',
+      'Anfahrt': 'distance_rate',
+      // Netzteile
       'Netzteil USB bis 15W': 'power_usb_15w',
+      'Power USB 15W': 'power_usb_15w',
       'Netzteil 30W': 'power_30w',
+      'Power 30W': 'power_30w',
       'Netzteil 70W': 'power_70w',
+      'Power 70W': 'power_70w',
       'Netzteil 120W': 'power_120w',
+      'Power 120W': 'power_120w',
       'Netzteil 200W': 'power_200w',
+      'Power 200W': 'power_200w',
       'Netzteil 250W': 'power_250w',
+      'Power 250W': 'power_250w',
       'Netzteil 300W': 'power_300w',
+      'Power 300W': 'power_300w',
       'Netzteil 400W': 'power_400w',
+      'Power 400W': 'power_400w',
       'Netzteil 1000W': 'power_1000w',
+      'Power 1000W': 'power_1000w',
+      // Versand
       'DHL Klein Packet': 'dhl_klein_20cm',
+      'DHL Klein': 'dhl_klein_20cm',
       'DHL mittlere Packet': 'dhl_mittel_60cm', 
+      'DHL Mittel': 'dhl_mittel_60cm',
       'DHL Große Packet': 'dhl_gross_100cm',
+      'DHL Groß': 'dhl_gross_100cm',
       'Spedition ab 120cm': 'spedition_120cm',
+      'Spedition': 'spedition_120cm',
       'Gütertransport (palettiert) ab 240cm': 'gutertransport_240cm',
+      'Gütertransport': 'gutertransport_240cm',
+      // Hängesystem
+      'Hängesystem': 'hanging_system',
+      'Hanging System': 'hanging_system',
+      'Aufhängung': 'hanging_system',
     };
 
     return mapping[mondayName] || null;
