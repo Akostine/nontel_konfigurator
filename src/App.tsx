@@ -36,7 +36,6 @@ try {
 
 function App() {
   const [user, setUser] = useState<any>(null);
-  const [neonOn, setNeonOn] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -89,6 +88,7 @@ function App() {
 }
 
 function NeonConfiguratorApp() {
+  const [neonOn, setNeonOn] = useState(true);
   const [config, setConfig] = useState<ConfigurationState>({
     selectedDesign: MOCK_DESIGNS[0],
     customWidth: 200, // 2m
