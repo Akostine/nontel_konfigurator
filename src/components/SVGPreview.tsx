@@ -17,7 +17,6 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [svgContent, setSvgContent] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   // Check if we have an uploaded SVG (from NeonMockupStage)
   const hasUploadedSvg = () => {
@@ -29,7 +28,22 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
   const getUploadedSvg = () => {
     const mockupStage = document.querySelector('[data-mockup-stage] svg');
     if (mockupStage) {
-      return mockupStage.outerHTML;
+      // Clone the SVG and remove all neon effects for clean display
+      const clonedSvg = mockupStage.cloneNode(true) as SVGElement;
+      
+      // Remove all neon effects and filters
+      clonedSvg.querySelectorAll('.neon-line').forEach((el: any) => {
+        el.style.filter = 'none';
+        // Reset to original stroke color
+        const originalColor = el.getAttribute('data-neoncolor') || '#000';
+        el.setAttribute('stroke', originalColor);
+        el.setAttribute('stroke-width', '2');
+      });
+      
+      // Remove any glow effects from the SVG itself
+      clonedSvg.style.filter = 'none';
+      
+      return clonedSvg.outerHTML;
     }
     return null;
   };
@@ -54,7 +68,7 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
           onClick={handlePreviewClick}
         >
           <div 
-            className="max-w-full max-h-full"
+            className="max-w-full max-h-full [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
             dangerouslySetInnerHTML={{ __html: svg || '' }}
           />
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
@@ -109,7 +123,7 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
               <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
                 {svgContent ? (
                   <div 
-                    className="max-w-full max-h-full"
+                    className="max-w-full max-h-full [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
                     style={{ maxWidth: '800px', maxHeight: '600px' }}
                     dangerouslySetInnerHTML={{ __html: svgContent }}
                   />
