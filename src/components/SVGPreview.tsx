@@ -16,74 +16,52 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
   className = "w-20 h-20"
 }) => {
   const [showModal, setShowModal] = useState(false);
-  
-  // Get the uploaded SVG from the mockup stage
-  const getUploadedSvgContent = (): string | null => {
-    try {
-      // Look for SVG in the mockup stage with the specific data attribute
-      const mockupStage = document.querySelector('[data-mockup-stage]');
-      if (!mockupStage) {
-        console.log('🔍 No mockup stage found');
-        return null;
-      }
+  const [svgContent, setSvgContent] = useState<string | null>(null);
+
+  // Check if we have an uploaded SVG (from NeonMockupStage)
+  const hasUploadedSvg = () => {
+    // Check if there's an SVG in the DOM from the mockup stage
+    const mockupStage = document.querySelector('[data-mockup-stage] svg');
+    return !!mockupStage;
+  };
+
+  const getUploadedSvg = () => {
+    const mockupStage = document.querySelector('[data-mockup-stage] svg');
+    if (mockupStage) {
+      // Clone the SVG and remove all neon effects for clean display
+      const clonedSvg = mockupStage.cloneNode(true) as SVGElement;
       
-      const svgElement = mockupStage.querySelector('svg');
-      if (!svgElement) {
-        console.log('🔍 No SVG found in mockup stage');
-        return null;
-      }
-      
-      console.log('✅ SVG found in mockup stage!');
-      
-      // Clone the SVG and clean it up for static display
-      const clonedSvg = svgElement.cloneNode(true) as SVGElement;
-      
-      // Remove all neon effects and filters for clean display
-      clonedSvg.style.filter = 'none';
-      clonedSvg.style.transform = 'none';
-      
-      // Clean up neon-line elements
+      // Remove all neon effects and filters
       clonedSvg.querySelectorAll('.neon-line').forEach((el: any) => {
         el.style.filter = 'none';
-        // Reset to original stroke color from data attribute
-        const originalColor = el.getAttribute('data-neoncolor');
-        if (originalColor) {
-          el.setAttribute('stroke', originalColor);
-        }
+        // Reset to original stroke color
+        const originalColor = el.getAttribute('data-neoncolor') || '#000';
+        el.setAttribute('stroke', originalColor);
         el.setAttribute('stroke-width', '2');
       });
       
-      // Remove any glow effects
-      clonedSvg.querySelectorAll('*').forEach((el: any) => {
-        if (el.style) {
-          el.style.filter = 'none';
-          el.style.boxShadow = 'none';
-        }
-      });
-      
-      // Ensure proper sizing attributes
-      clonedSvg.setAttribute('width', '100%');
-      clonedSvg.setAttribute('height', '100%');
-      clonedSvg.style.maxWidth = '100%';
-      clonedSvg.style.maxHeight = '100%';
+      // Remove any glow effects from the SVG itself
+      clonedSvg.style.filter = 'none';
       
       return clonedSvg.outerHTML;
-    } catch (error) {
-      console.error('Error getting SVG content:', error);
-      return null;
+    }
+    return null;
+  };
+
+  const handlePreviewClick = () => {
+    if (hasUploadedSvg()) {
+      const svg = getUploadedSvg();
+      setSvgContent(svg);
+      setShowModal(true);
+    } else {
+      // Fallback to design mockup image
+      setShowModal(true);
     }
   };
 
-  // Check if we have uploaded SVG content
-  const uploadedSvgContent = getUploadedSvgContent();
-  const hasUploadedSvg = !!uploadedSvgContent;
-
-  const handlePreviewClick = () => {
-    setShowModal(true);
-  };
-
   const renderPreview = () => {
-    if (hasUploadedSvg && uploadedSvgContent) {
+    if (hasUploadedSvg()) {
+      const svg = getUploadedSvg();
       return (
         <div 
           className={`${className} bg-white border-2 border-gray-200 rounded-lg p-2 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-sm cursor-pointer hover:shadow-md transition-shadow group relative`}
@@ -91,7 +69,7 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
         >
           <div 
             className="max-w-full max-h-full [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
-            dangerouslySetInnerHTML={{ __html: uploadedSvgContent }}
+            dangerouslySetInnerHTML={{ __html: svg || '' }}
           />
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
             <ZoomIn className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -131,9 +109,6 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
               <div>
                 <h3 className="text-lg font-semibold text-gray-800">{design.name}</h3>
                 <p className="text-sm text-gray-600">{width}×{height}cm</p>
-                {hasUploadedSvg && (
-                  <p className="text-xs text-green-600 font-medium">✓ Hochgeladenes SVG</p>
-                )}
               </div>
               <button
                 onClick={() => setShowModal(false)}
@@ -146,11 +121,11 @@ const SVGPreview: React.FC<SVGPreviewProps> = ({
             {/* Content */}
             <div className="p-6 overflow-auto max-h-[calc(90vh-120px)]">
               <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
-                {hasUploadedSvg && uploadedSvgContent ? (
+                {svgContent ? (
                   <div 
                     className="max-w-full max-h-full [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
                     style={{ maxWidth: '800px', maxHeight: '600px' }}
-                    dangerouslySetInnerHTML={{ __html: uploadedSvgContent }}
+                    dangerouslySetInnerHTML={{ __html: svgContent }}
                   />
                 ) : (
                   <img
